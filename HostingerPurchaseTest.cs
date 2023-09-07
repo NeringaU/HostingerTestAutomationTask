@@ -24,37 +24,52 @@ namespace HostingerTestAutomationTask
         {
             //Visit hostinger.com
             driver.Navigate().GoToUrl("https://www.hostinger.com");
-            System.Threading.Thread.Sleep(5000);
-            driver.FindElement(By.XPath("//*[@id=\"layout\"]/div/div/div/div/div/div/button[3]")).Click();
-
-            //Find and Click on the element
-            driver.FindElement(By.Id("hgr-topmenu-login")).Click();
-
-            //Add validation to check if next element is displayed
-            var validationElement = driver.FindElement(By.Name("email"));
-
-            Assert.IsTrue(validationElement.Displayed, "Validation Failed");
+            driver.Manage().Window.Maximize();
 
             //Add wait to give time to load elements
             System.Threading.Thread.Sleep(5000);
 
-            //Locate elements and fill in details and Login
+            //Accept Privacy Policies
+            driver.FindElement(By.CssSelector("[data-click-id='hgr-cookie_consent-accept_all_btn']")).Click();
 
-            driver.FindElement(By.Name("email")).SendKeys("sorobe6940@mtlcz.com");
-            driver.FindElement(By.Name("password")).SendKeys("Candidate!22");
-            driver.FindElement(By.XPath("//*[@id=\"user-login-form-2021\"]/div[2]/form/input")).Click();
-            System.Threading.Thread.Sleep(5000);
+            //Find and Click on the elements to choose 24months Web Hosting plan
+            try
+            {
+                System.Threading.Thread.Sleep(5000);
 
-            //Validate that you are in
-            var sucessMessage = driver.FindElement(By.LinkText("Hi, Test"));
-            Assert.IsTrue(sucessMessage.Displayed, "Success message is displayed");
+                driver.FindElement(By.CssSelector("[data-click-id='hgr-header-cta-get_started']")).Click();
+            }
+            catch (ElementClickInterceptedException ex)
+            {
+                Console.WriteLine("Element Click Intercepted: " + ex.Message);
+            }
+
+            try
+            {
+                System.Threading.Thread.Sleep(5000);
+
+                driver.FindElement(By.CssSelector("[data-click-id='hgr-homepage-pricing_table-add_to_cart-hosting_hostinger_business']")).Click();
+            }
+            catch (ElementClickInterceptedException ex)
+            {
+                Console.WriteLine("Element Click Intercepted: " + ex.Message);
+            }
+
+
+            driver.FindElement(By.XPath("//*[@id=\"hcart-cart-period-selector\"]/div[2]/span")).Click();
+
+
+            //Add validation to check if the plan is sucesfully added to cart.
+            var validationElement = driver.FindElement(By.LinkText("71.76"));
+
+            Assert.IsTrue(validationElement.Displayed, "Plan added to purchase");
 
         }
 
-        //[TearDown]
-        //public void TearDown()
-        //{
-        //    driver.Quit();
-        //}
+        [TearDown]
+        public void TearDown()
+        {
+            driver.Quit();
+        }
     }
 }
